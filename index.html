@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Push Notification Demo</title>
+</head>
+<body>
+  <h1>Enable Push Notifications</h1>
+  <button id="enableBtn">Enable Notifications</button>
+  <p id="status">Status: idle</p>
+  <pre id="token"></pre>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js";
+
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOImaiQRMjC_8vYfdr--Nxov2U5LsFFjQ",
+      authDomain: "go-ridor.firebaseapp.com",
+      projectId: "go-ridor",
+      storageBucket: "go-ridor.firebasestorage.app",
+      messagingSenderId: "448436270670",
+      appId: "1:448436270670:web:05dc50030f935c583ab51f",
+      measurementId: "G-6KHTG39W31"
+    };
+
+    // Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
+
+    const enableBtn = document.getElementById("enableBtn");
+    const statusEl = document.getElementById("status");
+    const tokenEl = document.getElementById("token");
+
+    enableBtn.addEventListener("click", async () => {
+      try {
+        statusEl.textContent = "Requesting permission...";
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          statusEl.textContent = "Permission denied";
+          return;
+        }
+
+        // Replace with your Firebase Console VAPID public key
+        const vapidKey = "BKmVsNHs1osSOcXle3-XobwrwO7Q8gIYtvqqkh2pQrf5nb7M_ld7GSzdfyrLvmcphoPw7C-fI1d6GRVNziLJ1lI";
+
+        statusEl.textContent = "Getting token...";
+        const token = await getToken(messaging, { vapidKey });
+        if (token) {
+          console.log("FCM Token:", token);
+          tokenEl.textContent = token;
+          statusEl.textContent = "Token generated!";
+        } else {
+          statusEl.textContent = "No token returned";
+        }
+      } catch (err) {
+        console.error("Error getting FCM token:", err);
+        statusEl.textContent = "Error: " + err.message;
+      }
+    });
+
+    // Foreground message handler
+    onMessage(messaging, (payload) => {
+      console.log("Message received in foreground:", payload);
+      alert("Notification: " + payload.notification.title);
+    });
+  </script>
+</body>
+</html>
