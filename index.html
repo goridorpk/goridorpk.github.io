@@ -36,15 +36,11 @@
     const tokenEl = document.getElementById("token");
 
     // Register service worker for GitHub Pages (relative path!)
-   if ("serviceWorker" in navigator) {
+  if ("serviceWorker" in navigator) {
   navigator.serviceWorker
-    .register("FcmNoti/firebase-messaging-sw.js") // set scope explicitly
-    .then((reg) => {
-      console.log("Service Worker registered:", reg);
-    })
-    .catch((err) => {
-      console.error("Service Worker registration failed:", err);
-    });
+    .register("/firebase-messaging-sw.js") // now works at root
+    .then((reg) => console.log("Service Worker registered:", reg))
+    .catch((err) => console.error("Service Worker registration failed:", err));
 }
 
 
@@ -83,5 +79,6 @@
   </script>
 </body>
 </html>
+
 
 
