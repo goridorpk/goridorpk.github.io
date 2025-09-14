@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Push Notification Demo</title>
   <style>
+    /* Reset and basic styling */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -74,6 +75,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js";
 
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDOImaiQRMjC_8vYfdr--Nxov2U5LsFFjQ",
       authDomain: "go-ridor.firebaseapp.com",
@@ -91,11 +93,14 @@
     const backBtn = document.getElementById("backBtn");
     const statusEl = document.getElementById("status");
 
+    // Check if token already exists in localStorage
     const savedToken = localStorage.getItem("fcm_token");
     if (savedToken) {
       statusEl.textContent = "Notifications already enabled!";
+      enableBtn.disabled = true;
     }
 
+    // Register Service Worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/firebase-messaging-sw.js")
@@ -103,6 +108,7 @@
         .catch((err) => console.error("Service Worker registration failed:", err));
     }
 
+    // Enable notifications
     enableBtn.addEventListener("click", async () => {
       try {
         statusEl.textContent = "Requesting permission...";
@@ -131,14 +137,12 @@
       }
     });
 
+    // Back button redirects user to main website
     backBtn.addEventListener("click", () => {
-      if (window.history.length > 1) {
-        window.history.back(); // try to go back
-      } else {
-        window.location.href = "https://www.goridor.com/"; // fallback
-      }
+      window.location.href = "https://www.goridor.com/";
     });
 
+    // Handle foreground notifications
     onMessage(messaging, (payload) => {
       console.log("Message received in foreground:", payload);
       alert(`Notification: ${payload.notification.title}\n${payload.notification.body}`);
