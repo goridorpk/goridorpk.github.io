@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Push Notification Demo</title>
   <style>
-    /* Basic Reset */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -38,6 +37,7 @@
       border-radius: 8px;
       cursor: pointer;
       transition: background 0.3s;
+      margin: 10px 0;
     }
 
     button:hover {
@@ -67,9 +67,9 @@
 <body>
   <h1>Enable Push Notifications</h1>
   <button id="enableBtn">Enable Notifications</button>
+  <button id="backBtn">Back</button>
   <p id="status">Status: idle</p>
 
-  <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js";
@@ -88,15 +88,14 @@
     const messaging = getMessaging(app);
 
     const enableBtn = document.getElementById("enableBtn");
+    const backBtn = document.getElementById("backBtn");
     const statusEl = document.getElementById("status");
 
-    // Check if token is already stored
     const savedToken = localStorage.getItem("fcm_token");
     if (savedToken) {
       statusEl.textContent = "Notifications already enabled!";
     }
 
-    // Register Service Worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/firebase-messaging-sw.js")
@@ -120,7 +119,7 @@
 
         if (token) {
           console.log("FCM Token saved to localStorage");
-          localStorage.setItem("fcm_token", token); // save token
+          localStorage.setItem("fcm_token", token);
           statusEl.textContent = "Notifications enabled successfully!";
           enableBtn.disabled = true;
         } else {
@@ -132,7 +131,14 @@
       }
     });
 
-    // Handle foreground messages
+    backBtn.addEventListener("click", () => {
+      if (window.history.length > 1) {
+        window.history.back(); // try to go back
+      } else {
+        window.location.href = "https://www.goridor.com/"; // fallback
+      }
+    });
+
     onMessage(messaging, (payload) => {
       console.log("Message received in foreground:", payload);
       alert(`Notification: ${payload.notification.title}\n${payload.notification.body}`);
