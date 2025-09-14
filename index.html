@@ -38,7 +38,7 @@
     // Register service worker for GitHub Pages (relative path!)
    if ("serviceWorker" in navigator) {
   navigator.serviceWorker
-    .register("./firebase-messaging-sw.js", { scope: './' }) // set scope explicitly
+    .register("FcmNoti/firebase-messaging-sw.js") // set scope explicitly
     .then((reg) => {
       console.log("Service Worker registered:", reg);
     })
@@ -83,4 +83,5 @@
   </script>
 </body>
 </html>
+
 
